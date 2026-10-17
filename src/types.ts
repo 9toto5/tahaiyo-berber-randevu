@@ -4,7 +4,7 @@ export type User = {
   email: string;
   password: string;
   phone: string;
-  role: 'staff' | 'customer';
+  role: "staff" | "customer";
   staffId?: string;
 };
 
@@ -24,7 +24,12 @@ export type WorkingHours = {
   breakEnd: string;
 };
 
-export type Leave = { id: string; date: string; endDate: string; reason: string };
+export type Leave = {
+  id: string;
+  date: string;
+  endDate: string;
+  reason: string;
+};
 
 export type Staff = {
   id: string;
@@ -56,7 +61,7 @@ export type Appointment = {
   time: string;
   price: number;
   duration: number;
-  status: 'confirmed' | 'completed' | 'cancelled';
+  status: "confirmed" | "completed" | "cancelled";
   note?: string;
 };
 

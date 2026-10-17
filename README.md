@@ -19,14 +19,14 @@ Uygulama `/tahaiyo-berber-randevu/` alt yolunda çalışır. Üretim çıktısı
 
 Tüm hesapların parolası **boss123**. Giriş penceresinden bir test hesabı da seçilebilir.
 
-| Rol | Ad | E-posta |
-| --- | --- | --- |
-| Personel | Emre Yılmaz | emre@boss.demo |
-| Personel | Mert Kaya | mert@boss.demo |
-| Personel | Can Demir | can@boss.demo |
-| Müşteri | Deniz Yıldız | deniz@boss.demo |
-| Müşteri | Ayşe Öz | ayse@boss.demo |
-| Müşteri | Arda Şahin | arda@boss.demo |
+| Rol      | Ad           | E-posta         |
+| -------- | ------------ | --------------- |
+| Personel | Emre Yılmaz  | emre@boss.demo  |
+| Personel | Mert Kaya    | mert@boss.demo  |
+| Personel | Can Demir    | can@boss.demo   |
+| Müşteri  | Deniz Yıldız | deniz@boss.demo |
+| Müşteri  | Ayşe Öz      | ayse@boss.demo  |
+| Müşteri  | Arda Şahin   | arda@boss.demo  |
 
 Müşteriler hizmet, personel, tarih ve uygun saat seçebilir; randevularını görüntüleyip iptal edebilir. Her personel kendi randevularını, hizmet ücret ve sürelerini, açık/kapalı günlerini, mola saatlerini, izin aralıklarını ve profilini yönetir. Çakışan randevular, mesai dışı saatler, molalar ve izin günleri rezervasyona kapalıdır.
 
