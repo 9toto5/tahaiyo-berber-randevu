@@ -70,7 +70,9 @@ test("customer books, keeps the reservation after reload and cancels it", async 
     .getByRole("dialog")
     .getByRole("button", { name: "Giriş yap", exact: true })
     .click();
-  await expect(page.locator(".booking-slots .is-selected")).toHaveText("09:00");
+  await expect(page.locator(".booking-slots .is-selected > span")).toHaveText(
+    "09:00",
+  );
   await page.getByRole("button", { name: "Randevumu oluştur" }).click();
   await expect(
     page.getByRole("heading", { name: "Randevun hazır." }),
@@ -98,6 +100,62 @@ test("customer books, keeps the reservation after reload and cancels it", async 
       .locator(".account-appointment")
       .filter({ hasText: "Test rezervasyonu" }),
   ).toContainText("İptal edildi");
+});
+
+test("booking shows occupied times as disabled and cancellation releases the slot", async ({
+  page,
+}) => {
+  const slots = page.locator(".booking-slots");
+  await expect(slots.getByRole("button")).toHaveCount(26);
+  await expect(
+    slots.getByRole("button", { name: "10:00 · Dolu", exact: true }),
+  ).toBeVisible();
+  await expect(
+    slots.getByRole("button", { name: "10:00 · Dolu", exact: true }),
+  ).toBeDisabled();
+  await expect(
+    slots.getByRole("button", { name: "10:30 · Dolu", exact: true }),
+  ).toBeDisabled();
+  await expect(
+    slots.getByRole("button", { name: "13:00 · Mola", exact: true }),
+  ).toBeDisabled();
+  await expect(
+    slots.getByRole("button", { name: "09:00", exact: true }),
+  ).toBeEnabled();
+  await page
+    .locator(".booking-services")
+    .getByRole("button")
+    .filter({ hasText: "Saç & sakal" })
+    .click();
+  await expect(
+    slots.getByRole("button", { name: "09:30 · Dolu", exact: true }),
+  ).toBeDisabled();
+  await expect(
+    slots.getByRole("button", { name: "12:30 · Mola", exact: true }),
+  ).toBeDisabled();
+  await expect(
+    slots.getByRole("button", { name: "21:30 · Süre yetmez", exact: true }),
+  ).toBeDisabled();
+  await login(page, "emre@boss.demo", true);
+  await page
+    .getByRole("button", {
+      name: "Deniz Yıldız randevusunu iptal et",
+      exact: true,
+    })
+    .click();
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Evet, iptal et", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Müşteri görünümüne dön", exact: true })
+    .click();
+  await expect(
+    slots.getByRole("button", { name: "10:00", exact: true }),
+  ).toBeEnabled();
+  await expect(
+    slots.getByRole("button", { name: "11:30 · Dolu", exact: true }),
+  ).toBeDisabled();
 });
 
 test("staff prices, working hours and leave change only that staff’s availability", async ({
@@ -327,21 +385,17 @@ test("mobile photo editing handles rotation, invalid images and storage failure"
   await page
     .getByRole("button", { name: "Profil ayarları", exact: true })
     .click();
-  await page
-    .getByLabel("Profil fotoğrafı seç", { exact: true })
-    .setInputFiles({
-      name: "not-a-photo.svg",
-      mimeType: "image/svg+xml",
-      buffer: Buffer.from('<svg xmlns="http://www.w3.org/2000/svg"/>'),
-    });
+  await page.getByLabel("Profil fotoğrafı seç", { exact: true }).setInputFiles({
+    name: "not-a-photo.svg",
+    mimeType: "image/svg+xml",
+    buffer: Buffer.from('<svg xmlns="http://www.w3.org/2000/svg"/>'),
+  });
   await expect(page.getByRole("alert")).toContainText("JPG, PNG veya WebP");
-  await page
-    .getByLabel("Profil fotoğrafı seç", { exact: true })
-    .setInputFiles({
-      name: "broken.png",
-      mimeType: "image/png",
-      buffer: Buffer.from("invalid image"),
-    });
+  await page.getByLabel("Profil fotoğrafı seç", { exact: true }).setInputFiles({
+    name: "broken.png",
+    mimeType: "image/png",
+    buffer: Buffer.from("invalid image"),
+  });
   await expect(page.getByRole("alert")).toContainText("fotoğraf açılamadı");
   await selectTestPhoto(page);
   const dialog = page.getByRole("dialog", { name: "Fotoğrafını kırp." });

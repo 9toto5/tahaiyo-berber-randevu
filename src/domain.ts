@@ -38,13 +38,18 @@ function validDate(value: string): boolean {
   return !Number.isNaN(date.getTime()) && localDate(date) === value;
 }
 
-export function availableSlots(
+export type DaySlot = {
+  time: string;
+  status: "available" | "busy" | "break" | "past" | "outside-hours";
+};
+
+export function getDaySlots(
   state: SalonState,
   staffId: string,
   serviceId: string,
   date: string,
   now = new Date(),
-): string[] {
+): DaySlot[] {
   if (!validDate(date) || date < localDate(now)) return [];
   const member = state.staff.find((item) => item.id === staffId);
   const service = member?.services.find(
@@ -54,6 +59,7 @@ export function availableSlots(
     !member ||
     !service ||
     !state.services.some((item) => item.id === serviceId) ||
+    !Number.isFinite(service.duration) ||
     service.duration <= 0
   )
     return [];
@@ -68,6 +74,8 @@ export function availableSlots(
     return [];
   const start = minutes(hours.start);
   const end = minutes(hours.end);
+  if (!Number.isFinite(start) || !Number.isFinite(end) || start >= end)
+    return [];
   const breakStart = hours.breakStart ? minutes(hours.breakStart) : -1;
   const breakEnd = hours.breakEnd ? minutes(hours.breakEnd) : -1;
   const reservations = state.appointments.filter(
@@ -76,31 +84,45 @@ export function availableSlots(
       appointment.date === date &&
       appointment.status !== "cancelled",
   );
-  const slots: string[] = [];
-  for (
-    let candidate = start;
-    candidate + service.duration <= end;
-    candidate += 30
-  ) {
+  const slots: DaySlot[] = [];
+  for (let candidate = start; candidate < end; candidate += 30) {
     const finish = candidate + service.duration;
+    let status: DaySlot["status"] = "available";
     if (
       date === localDate(now) &&
       candidate <= now.getHours() * 60 + now.getMinutes()
     )
-      continue;
-    if (breakEnd > breakStart && candidate < breakEnd && finish > breakStart)
-      continue;
-    if (
+      status = "past";
+    else if (finish > end) status = "outside-hours";
+    else if (
+      breakEnd > breakStart &&
+      candidate < breakEnd &&
+      finish > breakStart
+    )
+      status = "break";
+    else if (
       reservations.some(
         (appointment) =>
           candidate < minutes(appointment.time) + appointment.duration &&
           finish > minutes(appointment.time),
       )
     )
-      continue;
-    slots.push(toTime(candidate));
+      status = "busy";
+    slots.push({ time: toTime(candidate), status });
   }
   return slots;
+}
+
+export function availableSlots(
+  state: SalonState,
+  staffId: string,
+  serviceId: string,
+  date: string,
+  now = new Date(),
+): string[] {
+  return getDaySlots(state, staffId, serviceId, date, now)
+    .filter((slot) => slot.status === "available")
+    .map((slot) => slot.time);
 }
 
 export function validateBooking(

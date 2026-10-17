@@ -3,7 +3,13 @@ import type { ReactNode } from "react";
 import { createInitialState, validateBooking } from "./domain";
 import type { BookingInput, SalonState, Staff, User } from "./types";
 
-export { availableSlots, dateLabel, formatMoney, localDate } from "./domain";
+export {
+  availableSlots,
+  getDaySlots,
+  dateLabel,
+  formatMoney,
+  localDate,
+} from "./domain";
 
 const DATA_KEY = "boss-salon-demo-v1";
 const SESSION_KEY = "boss-salon-session-v1";

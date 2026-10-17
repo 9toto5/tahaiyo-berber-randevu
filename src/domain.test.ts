@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   availableSlots,
+  getDaySlots,
   createInitialState,
   localDate,
   validateBooking,
@@ -15,6 +16,75 @@ function fresh() {
   state.appointments = [];
   return state;
 }
+
+test("day schedule keeps occupied, break, elapsed and too-short slots visible", () => {
+  const state = fresh();
+  state.appointments.push({
+    id: "long",
+    customerId: "deniz",
+    staffId: "emre",
+    serviceId: "color",
+    date,
+    time: "10:00",
+    price: 900,
+    duration: 90,
+    status: "confirmed",
+  });
+  const slots = getDaySlots(state, "emre", "combo", date, morning);
+  const status = (time: string) =>
+    slots.find((slot) => slot.time === time)?.status;
+  assert.equal(slots.length, 26);
+  assert.equal(status("09:00"), "available");
+  for (const time of ["09:30", "10:00", "10:30", "11:00"])
+    assert.equal(status(time), "busy");
+  assert.equal(status("11:30"), "available");
+  for (const time of ["12:30", "13:00", "13:30"])
+    assert.equal(status(time), "break");
+  assert.equal(status("21:30"), "outside-hours");
+  assert.equal(
+    getDaySlots(state, "emre", "combo", date, new Date(2026, 0, 12, 9, 30))[1]
+      .status,
+    "past",
+  );
+  state.appointments[0].status = "cancelled";
+  assert.equal(
+    getDaySlots(state, "emre", "combo", date, morning).find(
+      (slot) => slot.time === "10:00",
+    )?.status,
+    "available",
+  );
+});
+
+test("a fully booked day still has visible slots without allowing a booking", () => {
+  const state = fresh();
+  for (const [index, time] of ["09:00", "14:00", "18:00"].entries()) {
+    state.appointments.push({
+      id: `full-${index}`,
+      customerId: "arda",
+      staffId: "emre",
+      serviceId: "color",
+      date,
+      time,
+      price: 900,
+      duration: 240,
+      status: "confirmed",
+    });
+  }
+  const slots = getDaySlots(state, "emre", "haircut", date, morning);
+  assert.equal(slots.length, 26);
+  assert.equal(slots.filter((slot) => slot.status === "busy").length, 24);
+  assert.equal(slots.filter((slot) => slot.status === "break").length, 2);
+  assert.deepEqual(availableSlots(state, "emre", "haircut", date, morning), []);
+  assert.match(
+    validateBooking(
+      state,
+      state.users.find((user) => user.id === "deniz")!,
+      { staffId: "emre", serviceId: "haircut", date, time: "10:00" },
+      morning,
+    )!,
+    /uygun değil/,
+  );
+});
 
 test("local dates stay in the local calendar and keep leading zeros", () => {
   assert.equal(localDate(new Date(2026, 0, 2, 0, 0)), "2026-01-02");

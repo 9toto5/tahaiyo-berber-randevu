@@ -12,13 +12,28 @@ import {
   UserRound,
 } from "lucide-react";
 import {
-  availableSlots,
+  getDaySlots,
   dateLabel,
   formatMoney,
   localDate,
   useSalon,
 } from "../store";
 import "./booking.css";
+
+const slotLabels = {
+  available: "Uygun",
+  busy: "Dolu",
+  break: "Mola",
+  past: "Geçti",
+  "outside-hours": "Süre yetmez",
+};
+const slotHints = {
+  available: "Bu saat için randevu alabilirsin.",
+  busy: "Seçtiğin hizmet bu saatte başka bir randevuyla çakışıyor.",
+  break: "Seçtiğin hizmet mola saatine denk geliyor.",
+  past: "Bu saat geçtiği için randevu alınamaz.",
+  "outside-hours": "Seçtiğin hizmet mesai bitmeden tamamlanamıyor.",
+};
 
 type BookingProps = {
   initialServiceId?: string;
@@ -43,6 +58,7 @@ export function Booking({
   const [note, setNote] = useState("");
   const [error, setError] = useState("");
   const [confirmed, setConfirmed] = useState(false);
+  const [now, setNow] = useState(() => new Date());
   const successRef = useRef<HTMLElement>(null);
   const service = state.services.find((item) => item.id === serviceId);
   const staff = state.staff.find((item) => item.id === staffId);
@@ -50,8 +66,8 @@ export function Booking({
     (item) => item.serviceId === serviceId && item.enabled,
   );
   const slots = useMemo(
-    () => availableSlots(state, staffId, serviceId, date),
-    [state, staffId, serviceId, date],
+    () => getDaySlots(state, staffId, serviceId, date, now),
+    [state, staffId, serviceId, date, now],
   );
   const dates = Array.from({ length: 7 }, (_, index) => {
     const day = new Date();
@@ -62,6 +78,25 @@ export function Booking({
       number: day.getDate(),
     };
   });
+
+  useEffect(() => {
+    const refresh = () => setNow(new Date());
+    const timer = window.setInterval(refresh, 30_000);
+    window.addEventListener("focus", refresh);
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener("focus", refresh);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (
+      !confirmed &&
+      time &&
+      !slots.some((slot) => slot.time === time && slot.status === "available")
+    )
+      setTime("");
+  }, [slots, time, confirmed]);
 
   useEffect(() => {
     if (initialServiceId || initialStaffId) {
@@ -360,28 +395,59 @@ export function Booking({
             </div>
             <div className="booking-slots-heading">
               <Clock3 size={15} />
-              <span>Uygun saatler</span>
+              <span>Saatini seç</span>
               <small>
                 {config?.duration || service?.duration} dakikalık seans
               </small>
             </div>
             {slots.length ? (
-              <div className="booking-slots">
-                {slots.map((slot) => (
-                  <button
-                    key={slot}
-                    aria-pressed={time === slot}
-                    className={time === slot ? "is-selected" : ""}
-                    onClick={() => {
-                      setTime(slot);
-                      setError("");
-                    }}
-                  >
-                    {slot}
-                    {time === slot && <Check size={13} />}
-                  </button>
-                ))}
-              </div>
+              <>
+                <div className="booking-slot-legend">
+                  <span>
+                    <i />
+                    Uygun
+                  </span>
+                  <span>
+                    <i />
+                    Dolu
+                  </span>
+                  <small>Uygun olmayan saatler seçilemez.</small>
+                </div>
+                <div className="booking-slots">
+                  {slots.map((slot) => (
+                    <button
+                      key={slot.time}
+                      aria-label={
+                        slot.status === "available"
+                          ? slot.time
+                          : `${slot.time} · ${slotLabels[slot.status]}`
+                      }
+                      aria-pressed={
+                        time === slot.time && slot.status === "available"
+                      }
+                      disabled={slot.status !== "available"}
+                      title={slotHints[slot.status]}
+                      className={`booking-slot is-${slot.status} ${time === slot.time && slot.status === "available" ? "is-selected" : ""}`}
+                      onClick={() => {
+                        setTime(slot.time);
+                        setError("");
+                      }}
+                    >
+                      <span>{slot.time}</span>
+                      <small>{slotLabels[slot.status]}</small>
+                      {time === slot.time && slot.status === "available" && (
+                        <Check size={13} />
+                      )}
+                    </button>
+                  ))}
+                </div>
+                {!slots.some((slot) => slot.status === "available") && (
+                  <p className="booking-day-full" role="status">
+                    Bu gün için uygun saat kalmadı. Başka bir gün veya berber
+                    seçebilirsin.
+                  </p>
+                )}
+              </>
             ) : (
               <div className="booking-no-slots">
                 <CalendarDays size={24} />

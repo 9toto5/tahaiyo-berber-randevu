@@ -333,7 +333,81 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 6px;
+  flex-direction: column;
+  min-height: 56px;
+  gap: 5px;
+}
+.booking-slots button small {
+  font-size: 9px;
+  color: #6d8448;
+}
+.booking-slots button > svg {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+}
+.booking-slots button:disabled {
+  opacity: 1;
+  cursor: not-allowed;
+  background: #eeefe9;
+  border-color: #e0e2d8;
+  color: #909587;
+}
+.booking-slots button:disabled small {
+  color: #929786;
+}
+.booking-slots button.is-busy {
+  background: #faeeeb;
+  color: #9f6256;
+  border-color: #edd5cf;
+}
+.booking-slots button.is-busy small {
+  color: #ac7467;
+}
+.booking-slots button.is-break {
+  background: #f5f0e5;
+  border-color: #e8dfcc;
+  color: #998361;
+}
+.booking-slots button.is-break small {
+  color: #a18b6a;
+}
+.booking-slot-legend {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+.booking-slot-legend > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  color: var(--muted);
+}
+.booking-slot-legend i {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #a0b577;
+}
+.booking-slot-legend > span:nth-child(2) i {
+  background: #ce9a8d;
+}
+.booking-slot-legend > small {
+  margin-left: auto;
+  font-size: 9px;
+  color: var(--muted);
+}
+.booking-day-full {
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: #e5e8da;
+  color: #737e62;
+  font-size: 11px;
+  line-height: 1.7;
+  margin-top: 15px;
 }
 .booking-slots button.is-selected {
   background: var(--accent);
