@@ -290,7 +290,15 @@ export function Booking({
                       className="booking-avatar"
                       style={{ background: member.color }}
                     >
-                      {member.initials}
+                      {member.photoUrl ? (
+                        <img
+                          className="profile-photo"
+                          src={member.photoUrl}
+                          alt={`${member.name} profil fotoğrafı`}
+                        />
+                      ) : (
+                        member.initials
+                      )}
                     </span>
                     <span>
                       <strong>{member.name}</strong>

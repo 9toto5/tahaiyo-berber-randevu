@@ -1,0 +1,274 @@
+.profile-photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
+.staff-avatar,
+.staff-preview-avatar,
+.booking-avatar {
+  overflow: hidden;
+}
+.team-portrait > .profile-photo {
+  position: absolute;
+  inset: 0;
+}
+.team-portrait:has(> .profile-photo) .team-demo-badge {
+  background: #f7f7f2e8;
+  padding: 4px 6px;
+  border-radius: 4px;
+}
+.profile-photo-settings {
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--line);
+}
+.profile-photo-settings-top {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.profile-photo-editor-avatar {
+  width: 82px;
+  height: 82px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  font-size: 24px;
+  font-weight: 600;
+}
+.profile-photo-settings h3 {
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+.profile-photo-settings-top p {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.65;
+}
+.profile-photo-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 13px;
+  margin-top: 12px;
+}
+.profile-photo-buttons .button {
+  font-size: 11px;
+  min-height: 35px;
+  padding: 9px 12px;
+  gap: 7px;
+}
+.photo-remove,
+.photo-reset {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 0;
+  background: transparent;
+  font-size: 11px;
+  color: var(--muted);
+}
+.photo-remove:hover {
+  color: #ad4834;
+}
+.profile-photo-hint {
+  font-size: 10px;
+  line-height: 1.7;
+  color: var(--muted);
+  margin-top: 14px;
+}
+.photo-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  clip-path: inset(50%);
+}
+.photo-error {
+  color: #a73d2d;
+  background: #fff0ea;
+  border: 1px solid #edd3c8;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12px;
+  line-height: 1.65;
+  margin-top: 14px;
+}
+.photo-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 160;
+  background: #111a14b8;
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.photo-crop-dialog {
+  background: var(--paper);
+  border-radius: 18px;
+  padding: 26px;
+  width: 540px;
+  max-width: 100%;
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+  outline: none;
+  box-shadow: 0 25px 100px #0b160c40;
+}
+.photo-crop-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.photo-crop-icon {
+  display: grid;
+  place-items: center;
+  width: 43px;
+  height: 43px;
+  flex-shrink: 0;
+  background: var(--accent);
+  border-radius: 12px;
+}
+.photo-crop-heading .eyebrow {
+  font-size: 8px;
+  letter-spacing: 1.4px;
+  margin-bottom: 5px;
+}
+.photo-crop-heading h2 {
+  font-size: 25px;
+  letter-spacing: -0.8px;
+}
+.photo-crop-heading > .icon-button {
+  margin-left: auto;
+}
+#photo-crop-help {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
+  margin: 17px 0;
+}
+.photo-crop-workspace {
+  position: relative;
+  background: #20231f;
+  height: 320px;
+  overflow: hidden;
+  border-radius: 12px;
+  touch-action: none;
+}
+.photo-crop-workspace .reactEasyCrop_CropArea {
+  color: #12190dbf;
+  border: 2px solid #fff;
+}
+.photo-crop-zoom {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 20px 0 15px;
+}
+.photo-crop-zoom > svg {
+  color: var(--muted);
+}
+.photo-crop-zoom > label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  clip-path: inset(50%);
+  overflow: hidden;
+}
+.photo-crop-zoom input {
+  flex: 1;
+  min-width: 0;
+  height: 24px;
+  accent-color: #809b39;
+  cursor: pointer;
+}
+.photo-crop-zoom output {
+  font-size: 11px;
+  min-width: 39px;
+  text-align: right;
+}
+.photo-crop-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.photo-crop-tools .button {
+  font-size: 11px;
+  min-height: 37px;
+  padding: 9px 12px;
+  gap: 8px;
+}
+.photo-crop-note {
+  font-size: 10px;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-top: 18px;
+}
+.photo-crop-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  border-top: 1px solid var(--line);
+  padding-top: 19px;
+  margin-top: 18px;
+}
+.photo-crop-actions .button {
+  font-size: 12px;
+  gap: 9px;
+}
+@media (max-width: 600px) {
+  .photo-modal-backdrop {
+    padding: 12px;
+  }
+  .photo-crop-dialog {
+    padding: 19px;
+    max-height: calc(100dvh - 24px);
+  }
+  .photo-crop-heading {
+    gap: 9px;
+  }
+  .photo-crop-heading h2 {
+    font-size: 22px;
+  }
+  .photo-crop-heading .eyebrow {
+    font-size: 6px;
+    letter-spacing: 1px;
+  }
+  .photo-crop-heading > .icon-button {
+    padding: 5px;
+  }
+  .photo-crop-workspace {
+    height: min(310px, 39dvh);
+  }
+  #photo-crop-help {
+    font-size: 11px;
+  }
+  .photo-crop-actions .button {
+    padding: 12px 14px;
+    font-size: 11px;
+  }
+  .profile-photo-settings-top {
+    align-items: flex-start;
+    gap: 13px;
+  }
+  .profile-photo-editor-avatar {
+    width: 66px;
+    height: 66px;
+    font-size: 21px;
+  }
+  .profile-photo-settings h3 {
+    font-size: 13px;
+  }
+  .profile-photo-settings-top p {
+    font-size: 10px;
+  }
+  .profile-photo-buttons {
+    gap: 11px;
+  }
+}

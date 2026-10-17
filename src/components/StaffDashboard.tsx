@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { formatMoney, localDate, useSalon } from "../store";
 import type { Appointment, Staff } from "../types";
+import ProfilePhoto from "./ProfilePhoto";
 import "./staff.css";
 
 type Tab =
@@ -237,13 +238,17 @@ export function StaffDashboard({ onBack }: { onBack: () => void }) {
         return;
       }
     }
-    updateStaff(staff!.id, {
+    const result = updateStaff(staff!.id, {
       services: services.map((service) => ({
         ...service,
         price: Number(service.price),
         duration: Number(service.duration),
       })),
     });
+    if (!result.ok) {
+      notify(result.error!, "error");
+      return;
+    }
     notify(
       "Hizmetleriniz ve ücretleriniz kaydedildi. Yeni randevulara uygulanacak.",
     );
@@ -274,7 +279,11 @@ export function StaffDashboard({ onBack }: { onBack: () => void }) {
         return;
       }
     }
-    updateStaff(staff!.id, { hours });
+    const result = updateStaff(staff!.id, { hours });
+    if (!result.ok) {
+      notify(result.error!, "error");
+      return;
+    }
     notify("Çalışma saatleriniz kaydedildi. Mevcut randevularınız korunur.");
   }
 
@@ -317,12 +326,16 @@ export function StaffDashboard({ onBack }: { onBack: () => void }) {
       );
       return;
     }
-    updateStaff(staff!.id, {
+    const result = updateStaff(staff!.id, {
       leaves: [
         ...staff!.leaves,
         { ...leave, reason: leave.reason.trim(), id: crypto.randomUUID() },
       ],
     });
+    if (!result.ok) {
+      notify(result.error!, "error");
+      return;
+    }
     setLeave({ date: today, endDate: today, reason: "" });
     notify("İzniniz eklendi. Bu tarihlerde yeni randevu alınamayacak.");
   }
@@ -333,11 +346,15 @@ export function StaffDashboard({ onBack }: { onBack: () => void }) {
       notify("Adınız ve unvanınız en az 2 karakter olmalıdır.", "error");
       return;
     }
-    updateStaff(staff!.id, {
+    const result = updateStaff(staff!.id, {
       name: profile.name.trim(),
       title: profile.title.trim(),
       bio: profile.bio.trim(),
     });
+    if (!result.ok) {
+      notify(result.error!, "error");
+      return;
+    }
     notify("Profiliniz kaydedildi. Müşteriler güncel bilgilerinizi görebilir.");
   }
 
@@ -387,7 +404,11 @@ export function StaffDashboard({ onBack }: { onBack: () => void }) {
           </button>
           <div className="staff-account">
             <div className="staff-avatar" style={{ background: staff.color }}>
-              {staff.initials}
+              {staff.photoUrl ? (
+                <img className="profile-photo" src={staff.photoUrl} alt="" />
+              ) : (
+                staff.initials
+              )}
             </div>
             <div>
               <strong>{staff.name}</strong>
@@ -1151,11 +1172,15 @@ export function StaffDashboard({ onBack }: { onBack: () => void }) {
                             className="staff-icon-button staff-cancel-button"
                             aria-label={`${item.reason} iznini kaldır`}
                             onClick={() => {
-                              updateStaff(staff.id, {
+                              const result = updateStaff(staff.id, {
                                 leaves: staff.leaves.filter(
                                   (entry) => entry.id !== item.id,
                                 ),
                               });
+                              if (!result.ok) {
+                                notify(result.error!, "error");
+                                return;
+                              }
                               notify(
                                 "İzin kaldırıldı. Çalışma saatlerin yeniden randevuya açık.",
                               );
@@ -1188,6 +1213,7 @@ export function StaffDashboard({ onBack }: { onBack: () => void }) {
                   <UserRound size={23} strokeWidth={1.5} />
                 </div>
                 <div className="staff-form-body">
+                  <ProfilePhoto staff={staff} onNotice={notify} />
                   <label className="staff-form-field">
                     <span>Ad soyad</span>
                     <input
@@ -1260,12 +1286,20 @@ export function StaffDashboard({ onBack }: { onBack: () => void }) {
                   className="staff-preview-avatar"
                   style={{ background: staff.color }}
                 >
-                  {profile.name
-                    .split(" ")
-                    .filter(Boolean)
-                    .map((part) => part[0])
-                    .slice(0, 2)
-                    .join("")}
+                  {staff.photoUrl ? (
+                    <img
+                      className="profile-photo"
+                      src={staff.photoUrl}
+                      alt={`${staff.name} profil fotoğrafı`}
+                    />
+                  ) : (
+                    profile.name
+                      .split(" ")
+                      .filter(Boolean)
+                      .map((part) => part[0])
+                      .slice(0, 2)
+                      .join("")
+                  )}
                 </div>
                 <h2>{profile.name || "Adın soyadın"}</h2>
                 <span className="staff-profile-title">

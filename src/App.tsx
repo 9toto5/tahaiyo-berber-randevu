@@ -437,13 +437,23 @@ export default function App() {
                     {state.staff.map((person, index) => (
                       <div className="team-card" key={person.id}>
                         <div className={`team-portrait portrait-${index}`}>
-                          <span className="portrait-letter">
-                            {person.initials}
-                          </span>
-                          <Scissors
-                            className="portrait-scissors"
-                            strokeWidth={0.6}
-                          />
+                          {person.photoUrl ? (
+                            <img
+                              className="profile-photo"
+                              src={person.photoUrl}
+                              alt={`${person.name} profil fotoğrafı`}
+                            />
+                          ) : (
+                            <>
+                              <span className="portrait-letter">
+                                {person.initials}
+                              </span>
+                              <Scissors
+                                className="portrait-scissors"
+                                strokeWidth={0.6}
+                              />
+                            </>
+                          )}
                           <span className="team-demo-badge">DEMO PERSONEL</span>
                         </div>
                         <div className="team-card-info">

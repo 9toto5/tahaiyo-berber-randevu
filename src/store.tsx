@@ -43,7 +43,10 @@ type SalonContextValue = {
   bookAppointment: (input: BookingInput) => { ok: boolean; error?: string };
   cancelAppointment: (id: string) => void;
   completeAppointment: (id: string) => void;
-  updateStaff: (id: string, patch: Partial<Staff>) => void;
+  updateStaff: (
+    id: string,
+    patch: Partial<Staff>,
+  ) => { ok: boolean; error?: string };
   resetDemo: () => void;
 };
 
@@ -197,8 +200,12 @@ export function SalonProvider({ children }: { children: ReactNode }) {
     updateStaff(id, patch) {
       const current = stateRef.current;
       const signedIn = currentUser();
-      if (signedIn?.role !== "staff" || signedIn.staffId !== id) return;
-      save({
+      if (signedIn?.role !== "staff" || signedIn.staffId !== id)
+        return {
+          ok: false,
+          error: "Yalnızca kendi profilinizi düzenleyebilirsiniz.",
+        };
+      const next: SalonState = {
         ...current,
         staff: current.staff.map((item) =>
           item.id === id
@@ -220,7 +227,18 @@ export function SalonProvider({ children }: { children: ReactNode }) {
               item.staffId === id ? { ...item, name: patch.name! } : item,
             )
           : current.users,
-      });
+      };
+      try {
+        localStorage.setItem(DATA_KEY, JSON.stringify(next));
+      } catch {
+        return {
+          ok: false,
+          error:
+            "Değişiklik kaydedilemedi. Tarayıcı depolama iznini ve boş alanını kontrol edin.",
+        };
+      }
+      save(next);
+      return { ok: true };
     },
     resetDemo() {
       save(createInitialState());

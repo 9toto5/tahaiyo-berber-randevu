@@ -38,6 +38,7 @@ export type Staff = {
   initials: string;
   color: string;
   bio: string;
+  photoUrl?: string;
   services: StaffService[];
   hours: WorkingHours[];
   leaves: Leave[];

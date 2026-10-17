@@ -34,6 +34,8 @@ Müşteriler hizmet, personel, tarih ve uygun saat seçebilir; randevularını g
 
 ## Verilerin kapsamı
 
+Personel, **Profil ayarları → Fotoğraf ekle** üzerinden JPG, PNG veya WebP fotoğraf seçebilir (en fazla 10 MB). Kırpma penceresinde fotoğraf sürüklenebilir, yakınlaştırılabilir ve 90° döndürülebilir. **Kırp ve kaydet** onayından sonra yalnızca kırpılmış 512×512 JPEG kaydedilir; orijinal dosya saklanmaz. Fotoğraf ekip kartlarında, müşteri berber seçiminde ve personel profilinde görünür. Fotoğraf değişikliği anında kaydedilir; profil metinleri ayrıca **Profili kaydet** ile kaydedilir.
+
 Bu ilk sürüm GitHub Pages üzerinde sunulabilen bir **yerel demodur**. Veriler tarayıcının localStorage alanında, oturum ise sekmeye özel sessionStorage alanında tutulur. Aynı tarayıcının sekmeleri arasında demo verileri güncellenir; farklı cihazlar arasında paylaşılmaz. Parolalar örnektir ve gerçek kimlik doğrulama sağlamaz. Gerçek rezervasyon, bildirim veya ödeme alınmaz. Gerçek müşterilerle kullanımdan önce sunucu, ortak veritabanı, güvenli kimlik doğrulama ve sunucuda yetki/çakışma kontrolü gerekir.
 
 ## Testler
